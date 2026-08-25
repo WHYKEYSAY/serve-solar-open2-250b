@@ -28,6 +28,17 @@ SOLAR_MODEL_DIR=/mnt/d/models/solar-open2-250b/IQ1_M \
 python3 scripts/bench_decode.py --port 8025 --label solar-open2-iq1-single-5090
 ```
 
+For the complete guarded sequence—which stops the production Qwen service only
+once, benchmarks both placement profiles, and restores Qwen even on failure—run:
+
+```bash
+./scripts/run-experiment.sh single-5090 dual-layer-split
+```
+
+Raw logs are placed in a timestamped `results/` directory. The runner addresses
+the exact `keying-122b.service` unit and the exact Solar child PID; it does not
+use broad `pkill` patterns.
+
 The first test uses IQ1_M only to validate architecture, CUDA kernels, chat
 format, and tool parsing. It is **not** assumed to preserve production quality:
 the quantizer reports substantially worse perplexity than Q6_K. Q2_K is the
