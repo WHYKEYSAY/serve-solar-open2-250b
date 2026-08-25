@@ -58,6 +58,8 @@ records are produced under `results/` and excluded from Git until curated.
 | Run | Placement | Context | Load | Decode | Prefill | Outcome |
 |---|---|---:|---:|---:|---:|---|
 | Build | patched llama.cpp, sm_120a | — | — | — | — | success; server + CLI |
+| Wrong single-GPU map | `CUDA_VISIBLE_DEVICES=1`, `CUDA0` | 4K | stopped | — | — | selected physical 5080; invalid profile |
+| Wrong dual ratio | 38 GPU layers, split `1,2` | 4K | 3.5s | — | — | CUDA1 requested 28,463.93 MiB; OOM |
 
 Build identification:
 
@@ -73,6 +75,16 @@ was too old to regenerate the optional web UI, after which the build system
 successfully fetched the prebuilt UI asset. This did not affect the server,
 CLI, CUDA backend, or Solar model graph.
 
+### Device-order finding
+
+On this host, patched llama.cpp reports `CUDA0 = RTX 5090 (32 GB)` and
+`CUDA1 = RTX 5080 (16 GB)`, while `nvidia-smi` displays the 5080 as index 0 and
+the 5090 as index 1. Setting `CUDA_VISIBLE_DEVICES=1` therefore produced the
+opposite of the intended placement in the first profile. The first dual profile
+also used the ratio `1,2`, causing a 28,463.93 MiB allocation on the 16 GB card.
+Both profiles were corrected to use llama.cpp's own order: no visibility remap,
+`--device CUDA0` for the 5090-only run, and `--tensor-split 2,1` for dual GPU.
+
 ### Download transport note
 
 The first 44.7 GB shard's initial HTTP/2 transfer was cancelled by the remote
@@ -81,6 +93,12 @@ file remained valid for byte-range continuation. The reproducible downloader
 was changed to HTTP/1.1 with `--retry-all-errors` and 20 retries, then resumed
 instead of restarting. The second shard was fetched concurrently with
 `huggingface_hub`/`hf_xet` to reduce wall time.
+
+Because the server advertises and correctly returns `206 Partial Content`, the
+remaining first-shard range was split into eight exact byte ranges. Every range
+is length-checked before ordered assembly. The original contiguous prefix and
+all segments are retained until llama.cpp successfully validates and loads the
+assembled GGUF; this makes the acceleration recoverable rather than destructive.
 
 ## Interpretation
 

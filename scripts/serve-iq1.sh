@@ -20,10 +20,11 @@ COMMON=(
 
 case "$PROFILE" in
   single-5090)
-    # Physical GPU 1 is the RTX 5090. Remap it to CUDA0 for the patched port.
-    export CUDA_VISIBLE_DEVICES=1
+    # llama.cpp enumerates CUDA0=5090 and CUDA1=5080 on this rig. This differs
+    # from nvidia-smi's physical index display, so do not remap visibility.
+    unset CUDA_VISIBLE_DEVICES
     exec "$SOLAR_BUILD_DIR/bin/llama-server" "${COMMON[@]}" \
-      --device CUDA0 --n-gpu-layers 999 --n-cpu-moe 24
+      --device CUDA0 --n-gpu-layers 999 --n-cpu-moe 29
     ;;
   dual-layer-split)
     # Experimental: offload complete early layers to CPU and distribute the
@@ -31,11 +32,10 @@ case "$PROFILE" in
     # with --n-cpu-moe until placement has been inspected.
     unset CUDA_VISIBLE_DEVICES
     exec "$SOLAR_BUILD_DIR/bin/llama-server" "${COMMON[@]}" \
-      --n-gpu-layers 38 --tensor-split 1,2
+      --split-mode layer --n-gpu-layers 36 --tensor-split 2,1
     ;;
   *)
     echo "Unknown profile: $PROFILE (use single-5090 or dual-layer-split)" >&2
     exit 2
     ;;
 esac
-

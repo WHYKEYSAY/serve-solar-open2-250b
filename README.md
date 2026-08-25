@@ -20,7 +20,7 @@ begins after the two IQ1_M shards finish downloading.
 ./scripts/build-patched-llama.sh
 ./scripts/download-iq1.sh
 
-# Conservative first boot: RTX 5090 only, experts from 24 layers in RAM.
+# Conservative first boot: RTX 5090 only, experts from 29 layers in RAM.
 SOLAR_MODEL_DIR=/mnt/d/models/solar-open2-250b/IQ1_M \
   ./scripts/serve-iq1.sh single-5090
 
