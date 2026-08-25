@@ -62,6 +62,8 @@ records are produced under `results/` and excluded from Git until curated.
 | Wrong dual ratio | 38 GPU layers, split `1,2` | 4K | 3.5s | — | — | CUDA1 requested 28,463.93 MiB; OOM |
 | Single 5090 | `-ngl 999 -ncmoe 29`, CUDA0 | 4K | 6m35s | **16.45–17.37** | 4.63–20.76 | success; current speed winner |
 | Dual layer split | 36 GPU layers, split `2,1` | 4K | 4m45s | **11.41–11.73** | 16.89–28.29 | success; slower than single 5090 |
+| Single 5090 repeat | same profile | 4K | 6m41s | **17.44–18.66** | 12.18–22.04 | success; stable repeat |
+| OpenAI tool call | single 5090, chat template | 4K | — | 20.89 | 80.33 | emitted valid `get_weather({"city":"Toronto"})` |
 
 Build identification:
 
@@ -120,10 +122,20 @@ necessary but not sufficient: placement topology matters.
 The speed benchmark uses llama.cpp's native `/completion` endpoint to obtain
 clean decode timings. Those samples are not passed through the chat template,
 so they must not be treated as the final instruction-following quality verdict.
-One dual-GPU code sample became repetitive. A separate OpenAI-compatible chat,
-Chinese, code, and tool-call smoke test is required before recommending IQ1_M
-for daily use.
+One dual-GPU code sample became repetitive. The subsequent OpenAI-compatible
+chat smoke proved that the patched template/parser can emit a valid native tool
+call: `get_weather({"city":"Toronto"})`, with `finish_reason=tool_calls`. The
+Chinese and code requests each consumed the entire 192-token cap in hidden
+reasoning and returned an empty visible `content` with `finish_reason=length`.
+That is a deployment-parameter failure, not evidence of an empty model: increase
+the output budget or explicitly disable/limit thinking before evaluating answer
+quality. IQ1_M is therefore **tool-parser viable but not quality-approved** for
+daily use from this smoke alone.
 
 Cold load from a Windows D: path through WSL 9p took 4m45s–6m35s. This is a
 storage-path cost rather than inference latency. Keeping the model resident or
 moving it to a native Linux filesystem would avoid repeated cold-start delay.
+
+After the final run the trap-guarded experiment restored the production
+`keying-deep` endpoint on port 8001. Both `/health` and `/v1/models` returned
+success before the run was considered complete.

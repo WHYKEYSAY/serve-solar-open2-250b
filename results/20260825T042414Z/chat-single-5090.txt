@@ -1,0 +1,57 @@
+{
+  "chinese": {
+    "elapsed_s": 12.794,
+    "finish_reason": "length",
+    "content": "",
+    "tool_calls": null,
+    "usage": {
+      "completion_tokens": 192,
+      "prompt_tokens": 57,
+      "total_tokens": 249,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    }
+  }
+}
+{
+  "code": {
+    "elapsed_s": 12.376,
+    "finish_reason": "length",
+    "content": "",
+    "tool_calls": null,
+    "usage": {
+      "completion_tokens": 192,
+      "prompt_tokens": 38,
+      "total_tokens": 230,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    }
+  }
+}
+{
+  "tool": {
+    "elapsed_s": 7.086,
+    "finish_reason": "tool_calls",
+    "content": "",
+    "tool_calls": [
+      {
+        "type": "function",
+        "function": {
+          "name": "get_weather",
+          "arguments": "{\"city\":\"Toronto\"}"
+        },
+        "id": "HJJGFMfXw4AZDGwwInryhI9YcUfzY4ER"
+      }
+    ],
+    "usage": {
+      "completion_tokens": 49,
+      "prompt_tokens": 199,
+      "total_tokens": 248,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    }
+  }
+}

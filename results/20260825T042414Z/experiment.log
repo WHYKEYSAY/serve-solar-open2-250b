@@ -1,0 +1,15 @@
+2026-08-25T04:24:14Z  Capturing pre-test state
+2026-08-25T04:24:14Z  Stopping keying-122b.service once for the Solar test sequence
+2026-08-25T04:24:15Z  GPU drain check: 1376 MiB
+2026-08-25T04:24:15Z  Starting Solar profile=single-5090
+2026-08-25T04:25:08Z  Loading 60s: GPU MiB=594,27331, RAM available=56Gi
+2026-08-25T04:26:08Z  Loading 120s: GPU MiB=596,27332, RAM available=54Gi
+2026-08-25T04:27:09Z  Loading 180s: GPU MiB=596,27633, RAM available=54Gi
+2026-08-25T04:28:09Z  Loading 240s: GPU MiB=596,27559, RAM available=54Gi
+2026-08-25T04:29:09Z  Loading 300s: GPU MiB=596,27646, RAM available=54Gi
+2026-08-25T04:30:10Z  Loading 360s: GPU MiB=596,27477, RAM available=54Gi
+2026-08-25T04:31:00Z  Solar profile=single-5090 healthy; running benchmark
+2026-08-25T04:32:24Z  Stopping Solar server pid=779874
+2026-08-25T04:32:38Z  Solar test sequence complete
+2026-08-25T04:32:38Z  Restoring keying-122b.service
+2026-08-25T04:36:22Z  Production model healthy on :8001
