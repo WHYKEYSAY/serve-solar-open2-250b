@@ -60,6 +60,8 @@ records are produced under `results/` and excluded from Git until curated.
 | Build | patched llama.cpp, sm_120a | — | — | — | — | success; server + CLI |
 | Wrong single-GPU map | `CUDA_VISIBLE_DEVICES=1`, `CUDA0` | 4K | stopped | — | — | selected physical 5080; invalid profile |
 | Wrong dual ratio | 38 GPU layers, split `1,2` | 4K | 3.5s | — | — | CUDA1 requested 28,463.93 MiB; OOM |
+| Single 5090 | `-ngl 999 -ncmoe 29`, CUDA0 | 4K | 6m35s | **16.45–17.37** | 4.63–20.76 | success; current speed winner |
+| Dual layer split | 36 GPU layers, split `2,1` | 4K | 4m45s | **11.41–11.73** | 16.89–28.29 | success; slower than single 5090 |
 
 Build identification:
 
@@ -102,6 +104,26 @@ assembled GGUF; this makes the acceleration recoverable rather than destructive.
 
 ## Interpretation
 
-Pending runtime measurements. A successful load alone will not establish that
-IQ1_M is useful: output coherence, multilingual behavior, coding, reasoning,
-and tool calling must be checked before keeping the model.
+Solar Open 2 **does run** on this consumer rig. The single-5090 expert-offload
+profile used approximately 28.7 GiB on the 5090, only the CUDA baseline on the
+5080, and about 34 GiB process RSS during generation. Across code, reasoning,
+and Chinese native-completion workloads it decoded at 16.45, 16.94, and 17.37
+tokens/s respectively.
+
+The dual-layer profile used approximately 30.7 GiB on the 5090, 14.3 GiB on the
+5080, and 19 GiB system memory, yet decoded at only 11.41–11.73 tokens/s. On
+this patched mainline build, reducing RAM-resident weights did not offset
+cross-device/layer-placement overhead. The lack of NCCL may also contribute.
+For this architecture and engine, the earlier "bytes in RAM" rule is therefore
+necessary but not sufficient: placement topology matters.
+
+The speed benchmark uses llama.cpp's native `/completion` endpoint to obtain
+clean decode timings. Those samples are not passed through the chat template,
+so they must not be treated as the final instruction-following quality verdict.
+One dual-GPU code sample became repetitive. A separate OpenAI-compatible chat,
+Chinese, code, and tool-call smoke test is required before recommending IQ1_M
+for daily use.
+
+Cold load from a Windows D: path through WSL 9p took 4m45s–6m35s. This is a
+storage-path cost rather than inference latency. Keeping the model resident or
+moving it to a native Linux filesystem would avoid repeated cold-start delay.

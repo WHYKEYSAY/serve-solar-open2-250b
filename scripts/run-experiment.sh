@@ -48,7 +48,7 @@ log "Capturing pre-test state"
 nvidia-smi --query-gpu=index,name,memory.total,memory.used,utilization.gpu \
   --format=csv,noheader | tee "$RESULT_DIR/gpu-before.csv"
 free -h | tee "$RESULT_DIR/memory-before.txt"
-/opt/llama-solar/build-solar/bin/llama-server --version \
+/opt/llama-solar/build-solar/bin/llama-server --version 2>&1 \
   | tee "$RESULT_DIR/server-version.txt"
 
 log "Stopping $PROD_SERVICE once for the Solar test sequence"
@@ -94,6 +94,10 @@ for profile in "${@:-single-5090}"; do
       --port "$SOLAR_PORT" --label "solar-open2-iq1-$profile" \
       --out "$RESULT_DIR/benchmarks.jsonl" \
       | tee "$RESULT_DIR/bench-$profile.txt"
+    python3 "$REPO_DIR/scripts/chat_smoke.py" \
+      --port "$SOLAR_PORT" --label "solar-open2-iq1-$profile" \
+      --out "$RESULT_DIR/chat-$profile.json" \
+      | tee "$RESULT_DIR/chat-$profile.txt"
   else
     log "Solar profile=$profile FAILED to become healthy"
   fi

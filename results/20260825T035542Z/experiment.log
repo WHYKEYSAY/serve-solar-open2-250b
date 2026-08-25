@@ -1,0 +1,15 @@
+2026-08-25T03:55:42Z  Capturing pre-test state
+2026-08-25T03:55:43Z  Stopping keying-122b.service once for the Solar test sequence
+2026-08-25T03:55:44Z  GPU drain check: 1510 MiB
+2026-08-25T03:55:44Z  Starting Solar profile=single-5090
+2026-08-25T03:56:35Z  Loading 60s: GPU MiB=15649,1162, RAM available=60Gi
+2026-08-25T03:57:36Z  Loading 120s: GPU MiB=15650,1027, RAM available=60Gi
+2026-08-25T03:58:36Z  Loading 180s: GPU MiB=15650,1027, RAM available=60Gi
+2026-08-25T03:59:06Z  Solar server exited during load; see /mnt/c/Telotia/Github/serve-solar-open2-250b/results/20260825T035542Z/server-single-5090.log
+2026-08-25T03:59:06Z  Solar profile=single-5090 FAILED to become healthy
+2026-08-25T03:59:11Z  Starting Solar profile=dual-layer-split
+2026-08-25T03:59:22Z  Solar server exited during load; see /mnt/c/Telotia/Github/serve-solar-open2-250b/results/20260825T035542Z/server-dual-layer-split.log
+2026-08-25T03:59:22Z  Solar profile=dual-layer-split FAILED to become healthy
+2026-08-25T03:59:27Z  Solar test sequence complete
+2026-08-25T03:59:27Z  Restoring keying-122b.service
+2026-08-25T04:04:41Z  Production model healthy on :8001
