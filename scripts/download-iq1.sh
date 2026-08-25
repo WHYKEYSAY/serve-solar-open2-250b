@@ -9,9 +9,11 @@ for shard in \
   Solar-Open2-250B-IQ1_M-00001-of-00002.gguf \
   Solar-Open2-250B-IQ1_M-00002-of-00002.gguf
 do
-  curl -fL --retry 5 --retry-delay 5 --continue-at - \
+  # HF's large Xet bridge occasionally cancels long-lived HTTP/2 streams.
+  # Force HTTP/1.1 and retry transport errors while preserving the partial file.
+  curl --http1.1 -fL --retry 20 --retry-all-errors --retry-delay 5 \
+    --continue-at - \
     "$BASE_URL/$shard" -o "$SOLAR_MODEL_DIR/$shard"
 done
 
 du -h "$SOLAR_MODEL_DIR"/*.gguf
-

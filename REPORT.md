@@ -73,6 +73,15 @@ was too old to regenerate the optional web UI, after which the build system
 successfully fetched the prebuilt UI asset. This did not affect the server,
 CLI, CUDA backend, or Solar model graph.
 
+### Download transport note
+
+The first 44.7 GB shard's initial HTTP/2 transfer was cancelled by the remote
+Xet bridge after approximately 8.3 GB (`curl: (92) ... CANCEL`). The partial
+file remained valid for byte-range continuation. The reproducible downloader
+was changed to HTTP/1.1 with `--retry-all-errors` and 20 retries, then resumed
+instead of restarting. The second shard was fetched concurrently with
+`huggingface_hub`/`hf_xet` to reduce wall time.
+
 ## Interpretation
 
 Pending runtime measurements. A successful load alone will not establish that
