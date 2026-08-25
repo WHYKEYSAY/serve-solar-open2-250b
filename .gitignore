@@ -1,0 +1,7 @@
+results/*.jsonl
+results/*.log
+results/*.csv
+*.gguf
+build/
+.cache/
+
