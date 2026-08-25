@@ -4,4 +4,5 @@ results/*.csv
 *.gguf
 build/
 .cache/
-
+__pycache__/
+*.py[cod]
